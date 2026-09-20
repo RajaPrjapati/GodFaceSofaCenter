@@ -771,35 +771,60 @@
   </div>
 
   <script>
-   function calculateTotals() {
-    let table = document.querySelector("table");
-    let rows = table.querySelectorAll("tbody tr"); // टेबल की सभी रो (Rows)
+function calculateTotals() {
+  const table = document.getElementById("myTable");
+  const rows = table.querySelectorAll("tbody tr");
 
-    let colTotals = new Array(21).fill(0); // 21 महीनों के कॉलम टोटल के लिए
+  // Pehle (Header) aur Aakhri (Total Interest) row ko chhodkar baki rows iterate karein
+  for (let i = 1; i < rows.length - 1; i++) {
+    const row = rows[i];
+    const cells = row.querySelectorAll("td");
 
-    rows.forEach(row => {
-        let rowTotal = 0;
-        let cells = row.querySelectorAll("td");
+    // Agar invalid row ho to skip karein
+    if (cells.length < 3) continue;
 
-        // मान लीजिए कॉलम 2 से 22 तक महीने के अमाउंट हैं
-        for (let i = 2; i <= 23; i++) {
-            let val = parseFloat(cells[i].innerText) || parseFloat(cells[i].querySelector("input")?.value) || 0;
-            rowTotal += val;
-            colTotals[i - 2] += val; // कॉलम वाइज़ जोड़ें
-        }
+    let rowTotal = 0;
 
-        // Grand Total वाले सेल में वैल्यू डालें (आखिरी कॉलम)
-        row.querySelector(".grand-total").innerText = rowTotal;
-    });
+    // Index 2 (10 January 2025) se lekar aakhri column se pehle tak ke saare amounts ko jodein
+    for (let j = 2; j < cells.length - 1; j++) {
+      let val = parseFloat(cells[j].innerText.trim()) || 0;
+      rowTotal += val;
+    }
 
-    // नीचे 'Total Interest' वाली रो को अपडेट करने के लिए:
-    let totalRowCells = document.querySelectorAll(".total-row td");
-    colTotals.forEach((total, index) => {
-        if (totalRowCells[index + 1]) {
-            totalRowCells[index + 1].innerText = total;
-        }
-    });
+    // Row ke last cell (Grand Total) me value update karein
+    const grandTotalCell = cells[cells.length - 1];
+    grandTotalCell.innerHTML = `<b>${rowTotal}</b>`;
+  }
+
+  // Column-wise Total Interest Calculate Karein
+  const totalRow = rows[rows.length - 1];
+  const totalCells = totalRow.querySelectorAll("td");
+  let grandOverallTotal = 0;
+
+  // Har month column ke liye total nikaalein
+  const colCount = rows[0].querySelectorAll("th").length;
+  for (let j = 2; j < colCount - 1; j++) {
+    let colTotal = 0;
+    for (let i = 1; i < rows.length - 1; i++) {
+      const cells = rows[i].querySelectorAll("td");
+      if (cells[j]) {
+        colTotal += parseFloat(cells[j].innerText.trim()) || 0;
+      }
+    }
+    if (totalCells[j - 1]) { // S.N column shift adjustment
+      totalCells[j - 1].innerHTML = `<b>${colTotal}</b>`;
+    }
+    grandOverallTotal += colTotal;
+  }
+
+  // Pure table ka Grand Total update karein
+  if (totalCells[totalCells.length - 1]) {
+    totalCells[totalCells.length - 1].innerHTML = `<b>${grandOverallTotal.toLocaleString('en-IN')}</b>`;
+  }
 }
-  </script>
+
+// Page load hote hi automatically run karein
+window.addEventListener("DOMContentLoaded", calculateTotals);
+</script>
 </body>
 </html>
