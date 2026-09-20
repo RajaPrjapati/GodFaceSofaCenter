@@ -14,19 +14,53 @@
 
   <h3>Auto Update Calculation</h3>
 
-  <table>
-    <tr>
-      <th>Month</th>
-      <th>Amount</th>
-    </tr>
-    <tr><td>January</td><td><input type="number" class="amount" value="1200"></td></tr>
-    <tr><td>February</td><td><input type="number" class="amount" value="500"></td></tr>
-    <tr><td>march</td><td><input type="number" class="amount" value="500"></td></tr>
-    <tr class="total-row">
-      <td>Total</td>
-      <td id="grandTotal">0</td>
-    </tr>
-  </table>
+  <h3>Auto Update Calculation</h3>
+<table>
+  <!-- Top Row Header -->
+  <tr>
+    <th>Month / Name</th>
+    <th>Raja</th>
+    <th>Ram</th>
+    <th>Rahul</th>
+    <th>Total</th>
+  </tr>
+  
+  <!-- January Row -->
+  <tr>
+    <th>January</th>
+    <td><input type="number" class="amount" value="1200"></td>
+    <td><input type="number" class="amount" value="0"></td>
+    <td><input type="number" class="amount" value="0"></td>
+    <td class="row-total">0</td>
+  </tr>
+  
+  <!-- February Row -->
+  <tr>
+    <th>February</th>
+    <td><input type="number" class="amount" value="500"></td>
+    <td><input type="number" class="amount" value="0"></td>
+    <td><input type="number" class="amount" value="0"></td>
+    <td class="row-total">0</td>
+  </tr>
+  
+  <!-- March Row -->
+  <tr>
+    <th>March</th>
+    <td><input type="number" class="amount" value="500"></td>
+    <td><input type="number" class="amount" value="0"></td>
+    <td><input type="number" class="amount" value="0"></td>
+    <td class="row-total">0</td>
+  </tr>
+  
+  <!-- Total Row -->
+  <tr class="total-row">
+    <td>Total</td>
+    <td id="totalRaja">0</td>
+    <td id="totalRam">0</td>
+    <td id="totalRahul">0</td>
+    <td id="grandTotal">0</td>
+  </tr>
+</table>
 
   <script>
     function calculateTotal() {
