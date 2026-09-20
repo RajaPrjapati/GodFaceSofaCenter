@@ -21,7 +21,6 @@
     </tr>
     <tr>
       <td>January</td>
-      <!-- Input change hone par calculation trigger hogi -->
       <td><input type="number" class="amount" value="1000"></td>
     </tr>
     <tr>
@@ -30,7 +29,7 @@
     </tr>
     <tr class="total-row">
       <td>Total</td>
-      <td id="grandTotal">1000</td>
+      <td id="grandTotal">0</td>
     </tr>
   </table>
 
@@ -39,12 +38,10 @@
       let total = 0;
       // Sabhi amount wale inputs ko select karein
       const inputs = document.querySelectorAll('.amount');
-      
       inputs.forEach(input => {
         let val = parseFloat(input.value) || 0;
         total += val;
       });
-
       // Total ko update karein
       document.getElementById('grandTotal').innerText = total;
     }
@@ -53,6 +50,9 @@
     document.querySelectorAll('.amount').forEach(input => {
       input.addEventListener('input', calculateTotal);
     });
+
+    // Page load hote hi initial calculation run karein
+    calculateTotal();
   </script>
 
 </body>
