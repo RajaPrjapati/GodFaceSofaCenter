@@ -770,100 +770,35 @@
   </div>
 
   <script>
-    // PDF Download Function (Final Fixed)
-document.getElementById("downloadBtn").addEventListener("click", () => {
-  const { jsPDF } = window.jspdf;
+   function calculateTotals() {
+    let table = document.querySelector("table");
+    let rows = table.querySelectorAll("tbody tr"); // टेबल की सभी रो (Rows)
 
-  // A3 Landscape for wide table
-  const doc = new jsPDF({
-    orientation: "landscape",
-    unit: "pt",
-    format: "a3"
-  });
+    let colTotals = new Array(21).fill(0); // 21 महीनों के कॉलम टोटल के लिए
 
-  // Title
-  doc.setFontSize(16);
-  doc.setTextColor(214, 51, 108);
-  doc.text("Deposited Monthly Interest - 10 January 2025 to 10 March 2026", 20, 30);
+    rows.forEach(row => {
+        let rowTotal = 0;
+        let cells = row.querySelectorAll("td");
 
-  let table = document.getElementById("myTable");
+        // मान लीजिए कॉलम 2 से 22 तक महीने के अमाउंट हैं
+        for (let i = 2; i <= 23; i++) {
+            let val = parseFloat(cells[i].innerText) || parseFloat(cells[i].querySelector("input")?.value) || 0;
+            rowTotal += val;
+            colTotals[i - 2] += val; // कॉलम वाइज़ जोड़ें
+        }
 
-  let head = [];
-  let body = [];
+        // Grand Total वाले सेल में वैल्यू डालें (आखिरी कॉलम)
+        row.querySelector(".grand-total").innerText = rowTotal;
+    });
 
-  // Header
-  let headerCells = table.rows[0].cells;
-  for (let i = 0; i < headerCells.length; i++) {
-    head.push(headerCells[i].innerText);
-  }
-
-  // Rows
-  for (let i = 1; i < table.rows.length; i++) {
-    let row = [];
-    let cells = table.rows[i].cells;
-
-    for (let j = 0; j < cells.length; j++) {
-      row.push(cells[j].innerText);
-    }
-    body.push(row);
-  }
-
-  doc.autoTable({
-    head: [head],
-    body: body,
-
-    // 🔥 Top se start (kam gap)
-    startY: 45,
-
-    theme: "grid",
-
-    styles: {
-      fontSize: 7,
-      cellPadding: 2,
-      halign: "center",
-      overflow: "linebreak"
-    },
-
-    headStyles: {
-      fillColor: [214, 51, 108],
-      textColor: 255,
-      fontSize: 8
-    },
-
-    columnStyles: {
-      0: { cellWidth: 40 },   // S.N
-      1: { cellWidth: 120 },  // Name
-    },
-
-    // 🔥 Wide table fix
-    horizontalPageBreak: true,
-    horizontalPageBreakRepeat: [0, 1],
-
-    // 🔥 Margin optimized (BOTTOM SPACE FIX)
-    margin: { top: 45, left: 20, right: 20, bottom: 10 },
-
-    didDrawPage: () => {
-      let today = new Date();
-      let dateStr = today.toLocaleDateString();
-      let timeStr = today.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
-      doc.setFontSize(8);
-
-      // 🔥 Footer bilkul bottom pe
-      doc.text(`Generated on: ${dateStr} ${timeStr}`, 20, doc.internal.pageSize.height - 8);
-    }
-  });
-
- 
-
-  // Save file
-  let today = new Date();
-  let time = today.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
-  let fileName = `Deposited_interest_${today.getDate()}_${today.toLocaleString('default',{month:'short'})}_${today.getFullYear()}_${time}.pdf`;
-
-  doc.save(fileName);
-});
+    // नीचे 'Total Interest' वाली रो को अपडेट करने के लिए:
+    let totalRowCells = document.querySelectorAll(".total-row td");
+    colTotals.forEach((total, index) => {
+        if (totalRowCells[index + 1]) {
+            totalRowCells[index + 1].innerText = total;
+        }
+    });
+}
   </script>
 </body>
 </html>
