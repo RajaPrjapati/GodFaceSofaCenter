@@ -18,11 +18,30 @@
       background-color: #d81b60;
       color: white;
     }
+
+    /* 1. Input field se Underline aur Border Focus Border hatane ke liye */
     input.amount {
       width: 50px;
       text-align: center;
-      border: 1px solid #ddd;
+      border: none;              /* Border aur Underline hata diya */
+      outline: none;             /* Click karne par aane wali outline hata di */
+      background: transparent;   /* Plain text jaisa look dene ke liye */
+      font-size: 13px;
+      font-family: inherit;
     }
+
+    /* 2. Chrome, Safari, Edge aur Opera me Increase/Decrease Arrows (Spinners) hatane ke liye */
+    input.amount::-webkit-outer-spin-button,
+    input.amount::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox me Increase/Decrease Arrows hatane ke liye */
+    input.amount[type=number] {
+      -moz-appearance: textfield;
+    }
+
     .total-cell {
       font-weight: bold;
     }
@@ -34,7 +53,7 @@
 </head>
 <body>
 
-<h3>💰 interest Details</h3>
+<h3>💰 Interest Details</h3>
 
 <table id="interestTable">
   <thead>
@@ -82,11 +101,8 @@
   function calculateTotals() {
     const rows = document.querySelectorAll('.data-row');
     let overallTotal = 0;
-    
-    // Column totals reset array
-    const colTotals = [0, 0, 0]; // jitne columns hain utne items rakhein
+    const colTotals = [0, 0, 0];
 
-    // 1. Har row ka horizontal sum (Grand Total) calculate karein
     rows.forEach(row => {
       let rowSum = 0;
       const inputs = row.querySelectorAll('.amount');
@@ -95,18 +111,15 @@
         let val = parseFloat(input.value) || 0;
         rowSum += val;
         
-        // Column wise add karein
         if (colTotals[colIndex] !== undefined) {
           colTotals[colIndex] += val;
         }
       });
 
-      // Row ka total update karein
       row.querySelector('.row-total').innerText = rowSum;
       overallTotal += rowSum;
     });
 
-    // 2. Column totals update karein
     colTotals.forEach((colSum, index) => {
       const colEl = document.getElementById(`col-total-${index}`);
       if (colEl) {
@@ -114,16 +127,13 @@
       }
     });
 
-    // 3. Final Grand Total update karein
     document.getElementById('finalGrandTotal').innerText = overallTotal;
   }
 
-  // Har input field par auto update Event Listener lagayein
   document.querySelectorAll('.amount').forEach(input => {
     input.addEventListener('input', calculateTotals);
   });
 
-  // Page load hote hi initial calculation run karein
   calculateTotals();
 </script>
 
