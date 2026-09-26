@@ -2,87 +2,130 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <title>Auto Update Table Example</title>
+  <title>Interest Details Table</title>
   <style>
-    table { width: 300px; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    input { width: 80%; padding: 4px; text-align: center; }
-    .total-row { font-weight: bold; background-color: #f2f2f2; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background-color: #d81b60;
+      color: white;
+    }
+    input.amount {
+      width: 50px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+    .total-cell {
+      font-weight: bold;
+    }
+    .grand-total {
+      background-color: #f8bbd0;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
 
-  <h3>Auto Update Calculation</h3>
+<h3>💰 interest Details</h3>
 
-  <h3>Auto Update Calculation</h3>
-<table>
-  <!-- Top Row Header -->
-  <tr>
-    <th>Month / Name</th>
-    <th>Raja</th>
-    <th>Ram</th>
-    <th>Rahul</th>
-    <th>Total</th>
-  </tr>
-  
-  <!-- January Row -->
-  <tr>
-    <th>January</th>
-    <td><input type="number" class="amount" value="1200"></td>
-    <td><input type="number" class="amount" value="0"></td>
-    <td><input type="number" class="amount" value="0"></td>
-    <td class="row-total">0</td>
-  </tr>
-  
-  <!-- February Row -->
-  <tr>
-    <th>February</th>
-    <td><input type="number" class="amount" value="500"></td>
-    <td><input type="number" class="amount" value="0"></td>
-    <td><input type="number" class="amount" value="0"></td>
-    <td class="row-total">0</td>
-  </tr>
-  
-  <!-- March Row -->
-  <tr>
-    <th>March</th>
-    <td><input type="number" class="amount" value="500"></td>
-    <td><input type="number" class="amount" value="0"></td>
-    <td><input type="number" class="amount" value="0"></td>
-    <td class="row-total">0</td>
-  </tr>
-  
-  <!-- Total Row -->
-  <tr class="total-row">
-    <td>Total</td>
-    <td id="totalRaja">0</td>
-    <td id="totalRam">0</td>
-    <td id="totalRahul">0</td>
-    <td id="grandTotal">0</td>
-  </tr>
+<table id="interestTable">
+  <thead>
+    <tr>
+      <th>S.N</th>
+      <th>Member Name</th>
+      <th>10 Jan</th>
+      <th>10 Feb</th>
+      <th>10 Mar</th>
+      <th>Grand Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Row 1 -->
+    <tr class="data-row">
+      <td>1</td>
+      <td>Anuj Lodhi</td>
+      <td><input type="number" class="amount col-0" value="500"></td>
+      <td><input type="number" class="amount col-1" value="500"></td>
+      <td><input type="number" class="amount col-2" value="500"></td>
+      <td class="row-total total-cell">0</td>
+    </tr>
+    <!-- Row 2 -->
+    <tr class="data-row">
+      <td>2</td>
+      <td>Raja Prajapati</td>
+      <td><input type="number" class="amount col-0" value="0"></td>
+      <td><input type="number" class="amount col-1" value="500"></td>
+      <td><input type="number" class="amount col-2" value="500"></td>
+      <td class="row-total total-cell">0</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr class="grand-total">
+      <td colspan="2">Total Interest</td>
+      <td id="col-total-0" class="col-total">0</td>
+      <td id="col-total-1" class="col-total">0</td>
+      <td id="col-total-2" class="col-total">0</td>
+      <td id="finalGrandTotal">0</td>
+    </tr>
+  </tfoot>
 </table>
 
-  <script>
-    function calculateTotal() {
-      let total = 0;
-      // Sabhi amount wale inputs ko select karein
-      const inputs = document.querySelectorAll('.amount');
-      inputs.forEach(input => {
-        let val = parseFloat(input.value) || 0;
-        total += val;
-      });
-      // Total ko update karein
-      document.getElementById('grandTotal').innerText = total;
-    }
+<script>
+  function calculateTotals() {
+    const rows = document.querySelectorAll('.data-row');
+    let overallTotal = 0;
+    
+    // Column totals reset array
+    const colTotals = [0, 0, 0]; // jitne columns hain utne items rakhein
 
-    // Har input box par 'input' event listener lagayein
-    document.querySelectorAll('.amount').forEach(input => {
-      input.addEventListener('input', calculateTotal);
+    // 1. Har row ka horizontal sum (Grand Total) calculate karein
+    rows.forEach(row => {
+      let rowSum = 0;
+      const inputs = row.querySelectorAll('.amount');
+      
+      inputs.forEach((input, colIndex) => {
+        let val = parseFloat(input.value) || 0;
+        rowSum += val;
+        
+        // Column wise add karein
+        if (colTotals[colIndex] !== undefined) {
+          colTotals[colIndex] += val;
+        }
+      });
+
+      // Row ka total update karein
+      row.querySelector('.row-total').innerText = rowSum;
+      overallTotal += rowSum;
     });
 
-    // Page load hote hi initial calculation run karein
-    calculateTotal();
-  </script>
+    // 2. Column totals update karein
+    colTotals.forEach((colSum, index) => {
+      const colEl = document.getElementById(`col-total-${index}`);
+      if (colEl) {
+        colEl.innerText = colSum;
+      }
+    });
+
+    // 3. Final Grand Total update karein
+    document.getElementById('finalGrandTotal').innerText = overallTotal;
+  }
+
+  // Har input field par auto update Event Listener lagayein
+  document.querySelectorAll('.amount').forEach(input => {
+    input.addEventListener('input', calculateTotals);
+  });
+
+  // Page load hote hi initial calculation run karein
+  calculateTotals();
+</script>
 
 </body>
 </html>
