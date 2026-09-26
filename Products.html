@@ -19,25 +19,23 @@
       color: white;
     }
 
-    /* 1. Input field se Underline aur Border Focus Border hatane ke liye */
+    /* Input Field Styling */
     input.amount {
       width: 50px;
       text-align: center;
-      border: none;              /* Border aur Underline hata diya */
-      outline: none;             /* Click karne par aane wali outline hata di */
-      background: transparent;   /* Plain text jaisa look dene ke liye */
+      border: none;
+      outline: none;
+      background: transparent;
       font-size: 13px;
       font-family: inherit;
     }
 
-    /* 2. Chrome, Safari, Edge aur Opera me Increase/Decrease Arrows (Spinners) hatane ke liye */
+    /* Arrows / Spinners ko hatane ke liye */
     input.amount::-webkit-outer-spin-button,
     input.amount::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
-
-    /* Firefox me Increase/Decrease Arrows hatane ke liye */
     input.amount[type=number] {
       -moz-appearance: textfield;
     }
@@ -71,18 +69,18 @@
     <tr class="data-row">
       <td>1</td>
       <td>Anuj Lodhi</td>
-      <td><input type="number" class="amount col-0" value="500"></td>
-      <td><input type="number" class="amount col-1" value="500"></td>
-      <td><input type="number" class="amount col-2" value="500"></td>
+      <td><input type="number" class="amount col-0" value="500" min="0"></td>
+      <td><input type="number" class="amount col-1" value="500" min="0"></td>
+      <td><input type="number" class="amount col-2" value="500" min="0"></td>
       <td class="row-total total-cell">0</td>
     </tr>
     <!-- Row 2 -->
     <tr class="data-row">
       <td>2</td>
       <td>Raja Prajapati</td>
-      <td><input type="number" class="amount col-0" value="0"></td>
-      <td><input type="number" class="amount col-1" value="500"></td>
-      <td><input type="number" class="amount col-2" value="500"></td>
+      <td><input type="number" class="amount col-0" value="0" min="0"></td>
+      <td><input type="number" class="amount col-1" value="500" min="0"></td>
+      <td><input type="number" class="amount col-2" value="500" min="0"></td>
       <td class="row-total total-cell">0</td>
     </tr>
   </tbody>
@@ -130,8 +128,21 @@
     document.getElementById('finalGrandTotal').innerText = overallTotal;
   }
 
+  // Pure JavaScript se control karein ki amount khali/back-space na ho sake
   document.querySelectorAll('.amount').forEach(input => {
-    input.addEventListener('input', calculateTotals);
+    // 1. Live Typing check
+    input.addEventListener('input', function() {
+      if (this.value < 0) this.value = 0; // Negative values block karne ke liye
+      calculateTotals();
+    });
+
+    // 2. Box se baahar click karne (blur) par agar empty chhora toh 0 auto-set hoga
+    input.addEventListener('blur', function() {
+      if (this.value === '' || isNaN(this.value)) {
+        this.value = 0;
+        calculateTotals();
+      }
+    });
   });
 
   calculateTotals();
