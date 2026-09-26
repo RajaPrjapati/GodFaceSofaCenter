@@ -129,42 +129,48 @@
   }
 
   document.querySelectorAll('.amount').forEach(input => {
-    // 1. Backspace aur Delete Key ko completely block karne ke liye
+
+    // 1. Selection automatic select-all karega jab user click karega
+    input.addEventListener('focus', function() {
+      this.select();
+    });
+
+    // 2. Typing/Keydown event: Backspace/Delete par blank na ho
     input.addEventListener('keydown', function(e) {
       if (e.key === 'Backspace' || e.key === 'Delete') {
-        // Agar poori value delete hone wali ho toh Backspace kaam nahi karega
-        if (this.value.length <= 1) {
+        // Agar single digit bachi hai ya poori value selected hai toh erase karne par '0' kar do
+        if (this.value.length === 1 || this.selectionStart === 0 && this.selectionEnd === this.value.length) {
           e.preventDefault();
           this.value = '0';
+          this.select(); // 0 ko select rakhein taaki naya number type karte hi replacement ho jaye
           calculateTotals();
         }
       }
     });
 
-    // 2. Typing aur instant total update
+    // 3. Naye numbers type karte hi zero replace karne ka logic
     input.addEventListener('input', function() {
-      // Agar value empty ho jaye ya negative ho jaye toh turant 0 kar do
       if (this.value === '' || this.value < 0) {
-        this.value = 0;
+        this.value = '0';
       }
-      // Agar leading zeros aa jayein (jaise 0500), toh use clean karne ke liye:
+      // Agar pehle '0' tha aur naya number type kiya (jaise '05'), toh '0' hata kar '5' karein
       if (this.value.length > 1 && this.value.startsWith('0')) {
-        this.value = parseFloat(this.value);
+        this.value = parseInt(this.value, 10) || 0;
       }
       calculateTotals();
     });
 
-    // 3. Focus lose hone par bhi safe zero fallback
+    // 4. Blur event (Safe Side Check)
     input.addEventListener('blur', function() {
       if (this.value === '' || isNaN(this.value)) {
-        this.value = 0;
+        this.value = '0';
         calculateTotals();
       }
     });
+
   });
 
   calculateTotals();
 </script>
-
 </body>
 </html>
