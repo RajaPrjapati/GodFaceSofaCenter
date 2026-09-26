@@ -128,15 +128,33 @@
     document.getElementById('finalGrandTotal').innerText = overallTotal;
   }
 
-  // Pure JavaScript se control karein ki amount khali/back-space na ho sake
   document.querySelectorAll('.amount').forEach(input => {
-    // 1. Live Typing check
+    // 1. Backspace aur Delete Key ko completely block karne ke liye
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        // Agar poori value delete hone wali ho toh Backspace kaam nahi karega
+        if (this.value.length <= 1) {
+          e.preventDefault();
+          this.value = '0';
+          calculateTotals();
+        }
+      }
+    });
+
+    // 2. Typing aur instant total update
     input.addEventListener('input', function() {
-      if (this.value < 0) this.value = 0; // Negative values block karne ke liye
+      // Agar value empty ho jaye ya negative ho jaye toh turant 0 kar do
+      if (this.value === '' || this.value < 0) {
+        this.value = 0;
+      }
+      // Agar leading zeros aa jayein (jaise 0500), toh use clean karne ke liye:
+      if (this.value.length > 1 && this.value.startsWith('0')) {
+        this.value = parseFloat(this.value);
+      }
       calculateTotals();
     });
 
-    // 2. Box se baahar click karne (blur) par agar empty chhora toh 0 auto-set hoga
+    // 3. Focus lose hone par bhi safe zero fallback
     input.addEventListener('blur', function() {
       if (this.value === '' || isNaN(this.value)) {
         this.value = 0;
